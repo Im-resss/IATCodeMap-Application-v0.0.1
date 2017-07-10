@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Map</title>
+  <meta name="viewport" content="initial-scale=1.0">
+  <meta charset="utf-8">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="Resss.json"></script>
+  <script>
+  function goMap(latt,lonn,btnId)
+  { 
+    map.setCenter(new google.maps.LatLng(latt,lonn)); 
+  }   
+  var plat;
+  var plon ;
+  var i = 0 ;
+  function colorize() {
+    var codee = cikti[i].code; 
+    var element = document.getElementById(codee);    
+    element.style.backgroundColor='#800';
+    element.style.color='white';
+    element.style.textAlign='center';
+    setTimeout(nancolorize,1000);
+  }
+  function nancolorize() {
+    if(i!=0){
+      var codee = cikti[i-1].code; 
+      var element = document.getElementById(codee);    
+      element.style.backgroundColor=null;
+      element.style.color=null;
+      element.style.textAlign='center';}
+    }
+    function oynat (){
+      plat=parseFloat(cikti[i].lat);         
+      plon = parseFloat(cikti[i].lon);
+      map.setCenter(new google.maps.LatLng(plat,plon)); 
+      colorize();
+      i++;
+      setTimeout(oynat,7000);
+    }
+    function pause() {
+    }
+    function next() {
+      plat=parseFloat(cikti[i].lat);         
+      plon = parseFloat(cikti[i].lon);
+      map.setCenter(new google.maps.LatLng(plat,plon));
+      colorize();
+    } 
+    function prev() {      
+      if(i!=0){ i--;}
+      if(i!=0){ i--;}      
+      plat=parseFloat(cikti[i].lat);
+      plon=parseFloat(cikti[i].lon);
+      map.setCenter(new google.maps.LatLng(plat,plon));
+      colorize();
+    }  
+    function play() {
+      oynat();
+    }
+    function randomString(length) {
+      var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+      if (! length) {
+        length = Math.floor(Math.random() * chars.length);
+      }
+      var str = '';
+      for (var i = 0; i < length; i++) {
+        str += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return str;}
+      var xhttp; 
+      var latt;
+      var lonn; 
+      var cikti;
+      var btnId=0;    
+      xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          cikti = JSON.parse(xhttp.responseText);    
+          for (var i = 0; i < cikti.length; i++) {
+           btnId++;
+           codee= cikti[i].code;
+           latt= cikti[i].lat;
+           lonn=cikti[i].lon;
+           tzz=cikti[i].tz;
+           var objTo = document.getElementById('list');
+           var divtest = document.createElement('li');
+           var rndId = randomString(8);
+           divtest.id=cikti[i].code;    
+           objTo.appendChild(divtest);
+           divtest.innerHTML += codee+" "+latt+" " +lonn+" "+tzz+"<button id='"+btnId+"' onClick='goMap("+latt+","+lonn+","+btnId+")' >dsads</button>"+"<br/> ";};
+         }
+       };
+       xhttp.open("GET", "data.json?a=78", true);
+       xhttp.setRequestHeader("Content-type","application/json",true);
+       xhttp.send();   
+       function goster()
+       {
+        var latim = parseFloat(document.getElementById('lati').value);
+        var longum = parseFloat(document.getElementById('long').value);  
+        map.setCenter(new google.maps.LatLng(latim,longum));
+      }
+      var map ;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat:-26.691196 , lng:141.04752},
+          zoom: 12
+        });
+      }
+      var i ;
+      </script> 
+      <style>     
+      #map { 
+        height: 85%;
+      }      
+      html, body {
+        height: 75%;
+        margin: 0;
+        padding: 0;
+      } 
+      </style>
+    </head>
+    <body>
+      <div id="map"></div>  
+      <div>
+        <input type="text" id="lati"/>
+        <input  type="text" id="long"/>
+        <input type="button" value="Gosteri" onClick="goster()" />
+      </div>  
+      <div >  
+        <button id ="prev" onClick="prev()">PREV</button>
+        <button id="play"  onClick="play()"> PLAY</button>
+        <button id="next"  onClick="next()">NEXT</button>
+        <button id="pause" onClick="pause()">PAUSE</button>
+      </div>
+      <ol id="list">
+      </ol>
+    </select>
+    <script type="text/javascript">
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VrHouTnBCp_GEBKJzLANMn3ql6aGy1k&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/timezone/json?location=&cikti[i].lat,&cikti[i].lon&timestamp=1331161200&key=AIzaSyCBg8MtISlt5X-4PtdRr5bmZfGy5ft9pzI"></script>
+  </body>
+  </html>
