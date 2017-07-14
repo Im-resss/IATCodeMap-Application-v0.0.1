@@ -30,16 +30,46 @@
       element.style.backgroundColor=null;
       element.style.color=null;
       element.style.textAlign='center';}
-    }
+    } 
+    var stop;
+    var tzxhttp;
+    var tzcikti;
+    var timezoneıd;
+    var veri;
     function oynat (){
       plat=parseFloat(cikti[i].lat);         
       plon = parseFloat(cikti[i].lon);
       map.setCenter(new google.maps.LatLng(plat,plon)); 
+      // REQUEST 2 !!!!!!!!!!!! <<<<<<<<<<<<------------------------------------------------------------------------------------------------------------------------
+       
+       tzxhttp = new XMLHttpRequest();
+       tzxhttp.onreadystatechange = function() {
+        if(this.readyState==4 && this.status==200) 
+        {
+          tzcikti = JSON.parse(tzxhttp.responseText);
+          timezoneıd=tzcikti.timeZoneId;
+          console.log(timezoneıd);
+          console.log(tzcikti);
+          
+
+          veri=cikti[i-1].tz;
+          document.getElementById('showTz').innerHTML=timezoneıd;
+          document.getElementById('showTz2').innerHTML=veri;
+
+
+        }
+      }      
+      tzxhttp.open("GET","https://maps.googleapis.com/maps/api/timezone/json?location="+plat+","+plon+"&timestamp=1331161200&key=AIzaSyAVkTZn29dDIgd3gTn7IDEDCxK_9XPxlhU",true);
+      tzxhttp.setRequestHeader("Content-type","application/json",true);
+      tzxhttp.send();
+            //------------------------------------------------------------------------------------------------------------------------------------------------------------
       colorize();
+      
       i++;
-      setTimeout(oynat,7000);
+      stop=setTimeout(oynat,3000);      
     }
     function pause() {
+      clearTimeout(stop);
     }
     function next() {
       plat=parseFloat(cikti[i].lat);         
@@ -73,16 +103,19 @@
       var lonn; 
       var cikti;
       var btnId=0;    
+      // REQUEST 1 !!!!!!!!!!<<<<<<<<<<<<<----------------------------------------------------------------------------------------------------------------------------
       xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-          cikti = JSON.parse(xhttp.responseText);    
+          cikti = JSON.parse(xhttp.responseText);
+            
           for (var i = 0; i < cikti.length; i++) {
            btnId++;
            codee= cikti[i].code;
            latt= cikti[i].lat;
            lonn=cikti[i].lon;
            tzz=cikti[i].tz;
+
            var objTo = document.getElementById('list');
            var divtest = document.createElement('li');
            var rndId = randomString(8);
@@ -93,12 +126,30 @@
        };
        xhttp.open("GET", "data.json?a=78", true);
        xhttp.setRequestHeader("Content-type","application/json",true);
-       xhttp.send();   
+       xhttp.send();
+       //------------------------------------------------------------------------------------------------------------------------------------------------------------
+       var gosterhttp;
+       var gostercikti;
+       
+       var tzgoster;
+       var gostertimezoneid;
        function goster()
        {
         var latim = parseFloat(document.getElementById('lati').value);
-        var longum = parseFloat(document.getElementById('long').value);  
+        var longum = parseFloat(document.getElementById('long').value); 
         map.setCenter(new google.maps.LatLng(latim,longum));
+        gosterhttp = new XMLHttpRequest();
+        gosterhttp.onreadystatechange= function() {
+          if (this.readyState==4 && this.status==200) {
+            gostercikti=JSON.parse(gosterhttp.responseText);
+            gostertimezoneid=gostercikti.timeZoneId; /*/ gonderdiğim koordinatlara göre burada timezone id yi gostertimezoneid ye kaydettim */
+
+            document.getElementById('ciktigoster').innerHTML = gostertimezoneid;
+          };
+        } 
+        gosterhttp.open("GET","https://maps.googleapis.com/maps/api/timezone/json?location="+latim+","+longum+"&timestamp=1331161200&key=AIzaSyAVkTZn29dDIgd3gTn7IDEDCxK_9XPxlhU",true);
+        gosterhttp.setRequestHeader("Content-type",true);
+        gosterhttp.send();
       }
       var map ;
       function initMap() {
@@ -121,24 +172,27 @@
       </style>
     </head>
     <body>
+     
       <div id="map"></div>  
       <div>
+         <div id="showTz"> SONUÇLARRRRRRRRRRRRRRRRRR</div>
+       </br>
+         <div id="showTz2"> VERİLERRRRRRRRRRRRRRRRRR </div>
         <input type="text" id="lati"/>
         <input  type="text" id="long"/>
-        <input type="button" value="Gosteri" onClick="goster()" />
+        <input type="button" value="Gosteri" onClick="goster()" >    </input>
+        <div id="ciktigoster" > GOSTER ÇIKTISI</div>
       </div>  
       <div >  
         <button id ="prev" onClick="prev()">PREV</button>
         <button id="play"  onClick="play()"> PLAY</button>
         <button id="next"  onClick="next()">NEXT</button>
         <button id="pause" onClick="pause()">PAUSE</button>
+
       </div>
       <ol id="list">
-      </ol>
-    </select>
-    <script type="text/javascript">
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VrHouTnBCp_GEBKJzLANMn3ql6aGy1k&callback=initMap" async defer></script>
-    <script src="https://maps.googleapis.com/maps/api/timezone/json?location=&cikti[i].lat,&cikti[i].lon&timestamp=1331161200&key=AIzaSyCBg8MtISlt5X-4PtdRr5bmZfGy5ft9pzI"></script>
-  </body>
-  </html>
+      </ol>      
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0VrHouTnBCp_GEBKJzLANMn3ql6aGy1k&callback=initMap" async defer></script>
+
+    </body>
+    </html>
